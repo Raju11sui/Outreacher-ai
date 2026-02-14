@@ -68,8 +68,17 @@ export default function DMGenerator() {
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || `Server error: ${response.status}`);
+        const contentType = response.headers.get("content-type");
+        let errorMessage;
+
+        if (contentType && contentType.indexOf("application/json") !== -1) {
+          const errorData = await response.json();
+          errorMessage = errorData.error;
+        } else {
+          errorMessage = await response.text();
+        }
+
+        throw new Error(errorMessage || `Server error: ${response.status}`);
       }
 
       const data = await response.json();
@@ -109,7 +118,7 @@ export default function DMGenerator() {
             <h1 className="text-3xl md:text-4xl font-bold mb-2 bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
               Generate High-Converting DMs
             </h1>
-            <p className="text-foreground/60 text-lg">Create psychologically optimized cold messages powered by Google Gemini AI</p>
+            <p className="text-foreground/60 text-lg">This AI Bot was made by Rahul Raj M</p>
           </div>
 
           <div className="grid lg:grid-cols-2 gap-8 items-start">
@@ -213,8 +222,11 @@ export default function DMGenerator() {
                 </div>
               </Card>
 
-              <div className="text-xs text-foreground/40 text-center">
+              <div className="text-xs text-foreground/40 text-center space-y-2">
                 <p>Powered by Google Gemini Pro</p>
+                <a href="https://github.com/Raju11sui" target="_blank" rel="noopener noreferrer" className="block text-blue-400 hover:underline">
+                  GitHub: Raju11sui
+                </a>
               </div>
             </div>
 
