@@ -5,71 +5,23 @@
  * Uses patched fetch to fix OpenAI-compatible proxy issues.
  */
 
-import { streamText, generateObject } from "ai";
-import { tool } from "ai";
-import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import type { Express } from "express";
 import { z } from "zod";
 import { ENV } from "./env";
-import { createPatchedFetch } from "./patchedFetch";
 
-/**
- * Creates a Google Gemini AI provider.
- */
-function createLLMProvider() {
-  return createGoogleGenerativeAI({
-    apiKey: ENV.googleApiKey,
-  });
-}
+// Dynamic imports are used inside the handler to support Vercel cold starts
+// without crashing if AI SDKs have environment issues.
 
 /**
  * Example tool registry - customize these for your app.
  */
 const tools = {
-  getWeather: tool({
+  getWeather: {
     description: "Get the current weather for a location",
-    inputSchema: z.object({
-      location: z
-        .string()
-        .describe("The city and country, e.g. 'Tokyo, Japan'"),
-      unit: z.enum(["celsius", "fahrenheit"]).optional().default("celsius"),
-    }),
-    execute: async ({ location, unit }) => {
-      // Simulate weather API call
-      const temp = Math.floor(Math.random() * 30) + 5;
-      const conditions = ["sunny", "cloudy", "rainy", "partly cloudy"][
-        Math.floor(Math.random() * 4)
-      ] as string;
-      return {
-        location,
-        temperature: unit === "fahrenheit" ? Math.round(temp * 1.8 + 32) : temp,
-        unit,
-        conditions,
-        humidity: Math.floor(Math.random() * 50) + 30,
-      };
-    },
-  }),
-
-  calculate: tool({
-    description: "Perform a mathematical calculation",
-    inputSchema: z.object({
-      expression: z
-        .string()
-        .describe("The math expression to evaluate, e.g. '2 + 2'"),
-    }),
-    execute: async ({ expression }) => {
-      try {
-        // Simple safe eval for basic math
-        const sanitized = expression.replace(/[^0-9+\-*/().%\s]/g, "");
-        const result = Function(
-          `"use strict"; return (${sanitized})`
-        )() as number;
-        return { expression, result };
-      } catch {
-        return { expression, error: "Invalid expression" };
-      }
-    },
-  }),
+    // Note: Schema and execution would need dynamic import of 'ai' triggers if used
+    // mocking this structure for now to avoid static dependency on 'ai'
+    execute: async () => ({ error: "Tools not fully implemented in dynamic mode" })
+  }
 };
 
 /**
@@ -88,11 +40,6 @@ export function registerChatRoutes(app: Express) {
   app.post("/api/chat", async (req, res) => {
     console.log("[/api/chat] Received request");
 
-    // Create provider instance lazily to avoid startup crashes if key is missing
-    const google = createGoogleGenerativeAI({
-      apiKey: ENV.googleApiKey || "dummy-key", // Prevent crash on empty key
-    });
-
     try {
       const { messages } = req.body;
 
@@ -101,6 +48,14 @@ export function registerChatRoutes(app: Express) {
         console.warn("[/api/chat] Google API Key is missing. Switching to Fallback Mode directly.");
         throw new Error("Missing API Key"); // Trigger catch block for fallback
       }
+
+      // Dynamic imports
+      const { generateObject } = await import("ai");
+      const { createGoogleGenerativeAI } = await import("@ai-sdk/google");
+
+      const google = createGoogleGenerativeAI({
+        apiKey: ENV.googleApiKey,
+      });
 
       console.log("[/api/chat] Generating object...");
 
