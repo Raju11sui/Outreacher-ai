@@ -9,7 +9,7 @@ import { streamText, generateObject } from "ai";
 import { tool } from "ai";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import type { Express } from "express";
-import { z } from "zod/v4";
+import { z } from "zod";
 import { ENV } from "./env";
 import { createPatchedFetch } from "./patchedFetch";
 
