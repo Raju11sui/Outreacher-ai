@@ -50,14 +50,14 @@ registerOAuthRoutes(app);
 // Chat API with streaming and tool calling
 registerChatRoutes(app);
 
-// tRPC API
-app.use(
-  "/api/trpc",
-  createExpressMiddleware({
-    router: appRouter,
-    createContext,
-  })
-);
+const trpcMiddleware = createExpressMiddleware({
+  router: appRouter,
+  createContext,
+});
+
+// tRPC API - Handle both paths to be safe with Vercel rewrites
+app.use("/api/trpc", trpcMiddleware);
+app.use("/trpc", trpcMiddleware);
 
 // We need to await setupVite in dev, so we wrap the startup logic
 async function startServer() {

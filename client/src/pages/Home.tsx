@@ -9,11 +9,7 @@ export default function Home() {
   const [, navigate] = useLocation();
 
   const handleGetStarted = () => {
-    if (isAuthenticated) {
-      navigate("/generate");
-    } else {
-      window.location.href = getLoginUrl();
-    }
+    navigate("/generate");
   };
 
   return (
@@ -229,8 +225,8 @@ export default function Home() {
               <div
                 key={idx}
                 className={`rounded-lg transition-all duration-300 ${plan.highlighted
-                    ? "glass-lg p-8 border-blue-500/50 scale-105"
-                    : "glass p-8"
+                  ? "glass-lg p-8 border-blue-500/50 scale-105"
+                  : "glass p-8"
                   }`}
               >
                 <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
@@ -242,8 +238,8 @@ export default function Home() {
                 <Button
                   onClick={handleGetStarted}
                   className={`w-full mb-6 ${plan.highlighted
-                      ? "bg-blue-600 hover:bg-blue-700"
-                      : "bg-white/10 hover:bg-white/20 border border-white/20"
+                    ? "bg-blue-600 hover:bg-blue-700"
+                    : "bg-white/10 hover:bg-white/20 border border-white/20"
                     }`}
                 >
                   {plan.cta}
