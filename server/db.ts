@@ -1,6 +1,6 @@
 import { eq, and, desc } from "drizzle-orm";
-import { drizzle, MySql2Database } from "drizzle-orm/mysql2";
-import mysql from "mysql2/promise";
+// import { drizzle, MySql2Database } from "drizzle-orm/mysql2";
+// import mysql from "mysql2/promise";
 import {
   InsertUser, users, subscriptions, campaigns, messages,
   InsertSubscription, InsertCampaign, InsertMessage,
@@ -8,7 +8,7 @@ import {
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
-let _db: MySql2Database<any> | null = null;
+let _db: any = null; // Type: MySql2Database<any> | null
 let _mockStore = {
   users: [] as User[],
   subscriptions: [] as Subscription[],
@@ -36,6 +36,9 @@ if (!_mockStore.users.find(u => u.id === DEV_USER_ID)) {
 export async function getDb() {
   if (!_db && process.env.DATABASE_URL) {
     try {
+      const mysql = (await import("mysql2/promise")).default;
+      const { drizzle } = await import("drizzle-orm/mysql2");
+
       const pool = mysql.createPool({
         uri: process.env.DATABASE_URL,
       });
