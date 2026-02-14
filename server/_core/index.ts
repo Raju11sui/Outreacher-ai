@@ -38,29 +38,46 @@ async function findAvailablePort(startPort: number = 3000): Promise<number> {
 }
 
 const app = express();
-const server = createServer(app);
+let server: any;
 
-// Configure body parser with larger size limit for file uploads
-app.use(express.json({ limit: "50mb" }));
-app.use(express.urlencoded({ limit: "50mb", extended: true }));
+try {
+  server = createServer(app);
 
-// OAuth callback under /api/oauth/callback
-registerOAuthRoutes(app);
+  // Configure body parser with larger size limit for file uploads
+  app.use(express.json({ limit: "50mb" }));
+  app.use(express.urlencoded({ limit: "50mb", extended: true }));
 
-// Chat API with streaming and tool calling
-registerChatRoutes(app);
+  // OAuth callback under /api/oauth/callback
+  registerOAuthRoutes(app);
 
-const trpcMiddleware = createExpressMiddleware({
-  router: appRouter,
-  createContext,
-});
+  // Chat API with streaming and tool calling
+  registerChatRoutes(app);
 
-// tRPC API - Handle both paths to be safe with Vercel rewrites
-app.use("/api/trpc", trpcMiddleware);
-app.use("/trpc", trpcMiddleware);
+  const trpcMiddleware = createExpressMiddleware({
+    router: appRouter,
+    createContext,
+  });
+
+  // tRPC API - Handle both paths to be safe with Vercel rewrites
+  app.use("/api/trpc", trpcMiddleware);
+  app.use("/trpc", trpcMiddleware);
+
+} catch (error: any) {
+  console.error('[Fatal] Server initialization failed:', error);
+  // Create a minimal fallback app to report the error
+  app.use((req, res) => {
+    res.status(500).json({
+      error: 'Server Initialization Failed',
+      details: error.message,
+      stack: error.stack
+    });
+  });
+}
 
 // We need to await setupVite in dev, so we wrap the startup logic
 async function startServer() {
+  if (!server) return; // Skip if initialization failed
+
   // development mode uses Vite, production mode uses static files
   if (process.env.NODE_ENV === "development") {
     await setupVite(app, server);

@@ -330,4 +330,19 @@ class SDKServer {
   }
 }
 
-export const sdk = new SDKServer();
+// Lazy singleton to prevent startup crashes
+let _sdk: SDKServer | null = null;
+
+function getSdk(): SDKServer {
+  if (!_sdk) {
+    _sdk = new SDKServer();
+  }
+  return _sdk;
+}
+
+// Export a proxy that initializes SDK on first access
+export const sdk = new Proxy({} as SDKServer, {
+  get(_target, prop) {
+    return Reflect.get(getSdk(), prop);
+  }
+});
