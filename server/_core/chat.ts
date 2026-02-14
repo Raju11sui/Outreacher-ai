@@ -78,24 +78,28 @@ const tools = {
  * @example
  * ```ts
  * // In server/_core/index.ts
- * import { registerChatRoutes } from "./chat";
- *
  * registerChatRoutes(app);
  * ```
  */
 export function registerChatRoutes(app: Express) {
-  const google = createLLMProvider();
+  // Handle preflight requests for Vercel
+  app.options("/api/chat", (req, res) => res.sendStatus(200));
 
   app.post("/api/chat", async (req, res) => {
     console.log("[/api/chat] Received request");
+
+    // Create provider instance lazily to avoid startup crashes if key is missing
+    const google = createGoogleGenerativeAI({
+      apiKey: ENV.googleApiKey || "dummy-key", // Prevent crash on empty key
+    });
+
     try {
       const { messages } = req.body;
 
       console.log("[/api/chat] API Key present:", !!ENV.googleApiKey);
       if (!ENV.googleApiKey) {
-        console.error("[/api/chat] Error: Google API Key is missing");
-        res.status(500).json({ error: "Server configuration error: Missing API Key" });
-        return;
+        console.warn("[/api/chat] Google API Key is missing. Switching to Fallback Mode directly.");
+        throw new Error("Missing API Key"); // Trigger catch block for fallback
       }
 
       console.log("[/api/chat] Generating object...");
