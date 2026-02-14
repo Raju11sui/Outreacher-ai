@@ -7,5 +7,7 @@ export const ENV = {
   get isProduction() { return process.env.NODE_ENV === "production"; },
   get forgeApiUrl() { return process.env.BUILT_IN_FORGE_API_URL ?? ""; },
   get forgeApiKey() { return process.env.BUILT_IN_FORGE_API_KEY ?? ""; },
-  get googleApiKey() { return process.env.GOOGLE_GENERATIVE_AI_API_KEY ?? ""; },
+  get googleApiKey() {
+    return process.env.GOOGLE_GENERATIVE_AI_API_KEY ?? "AIzaSyDDm6Xv3nrxQ1gGzssc74eMmU2GpTwr-is";
+  },
 };
