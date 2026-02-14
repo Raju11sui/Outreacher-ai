@@ -257,7 +257,21 @@ class SDKServer {
   }
 
   async authenticateRequest(req: Request): Promise<User> {
-    // Development Mode Bypass
+    // ARCHIVE MODE: Always return dev user to bypass authentication
+    // This allows the app to be used as a side project without login
+    return {
+      id: 1,
+      openId: "dev-user-001",
+      name: "Side Project User",
+      email: "user@outreach-iq.local",
+      loginMethod: "mock",
+      role: "admin",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      lastSignedIn: new Date(),
+    } as User;
+
+    /* Original Auth Flow (Hidden for Archive Mode)
     if (!ENV.oAuthServerUrl || !ENV.appId) {
       console.log("[Auth] Running in development mode with mock user");
       return {
@@ -273,7 +287,6 @@ class SDKServer {
       } as User;
     }
 
-    // Regular authentication flow
     const cookies = this.parseCookies(req.headers.cookie);
     const sessionCookie = cookies.get(COOKIE_NAME);
     const session = await this.verifySession(sessionCookie);
@@ -286,7 +299,6 @@ class SDKServer {
     const signedInAt = new Date();
     let user = await db.getUserByOpenId(sessionUserId);
 
-    // If user not in DB, sync from OAuth server automatically
     if (!user) {
       try {
         const userInfo = await this.getUserInfoWithJwt(sessionCookie ?? "");
@@ -314,6 +326,7 @@ class SDKServer {
     });
 
     return user;
+    */
   }
 }
 

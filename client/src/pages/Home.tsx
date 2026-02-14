@@ -32,7 +32,9 @@ export default function Home() {
           </div>
           <div className="flex items-center gap-4">
             <a href="#features" className="text-sm text-foreground/70 hover:text-foreground transition-colors">Features</a>
-            <a href="#pricing" className="text-sm text-foreground/70 hover:text-foreground transition-colors">Pricing</a>
+            {/* Archive Mode: Pricing hidden */}
+            {/* <a href="#pricing" className="text-sm text-foreground/70 hover:text-foreground transition-colors">Pricing</a> */}
+            {/* Archive Mode: Sign In/Dashboard hidden
             {isAuthenticated ? (
               <Button onClick={() => navigate("/dashboard")} className="bg-blue-600 hover:bg-blue-700">
                 Dashboard
@@ -42,6 +44,7 @@ export default function Home() {
                 Sign in
               </Button>
             )}
+            */}
           </div>
         </div>
       </nav>
@@ -189,8 +192,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Pricing Section */}
-      <section id="pricing" className="relative z-10 py-20 md:py-32 border-t border-white/5">
+      {/* Pricing Section - ARCHIVED */}
+      {/* <section id="pricing" className="relative z-10 py-20 md:py-32 border-t border-white/5">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl md:text-4xl font-bold mb-4 text-center">Simple, Transparent Pricing</h2>
           <p className="text-center text-foreground/60 mb-16">Start free. Upgrade when you're ready.</p>
@@ -256,7 +259,7 @@ export default function Home() {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* CTA Section */}
       <section className="relative z-10 py-20 md:py-32 border-t border-white/5">
@@ -277,6 +280,6 @@ export default function Home() {
           <p>&copy; 2026 OutreachIQ. All rights reserved. Revenue-focused outreach, not generic AI.</p>
         </div>
       </footer>
-    </div>
+    </div >
   );
 }

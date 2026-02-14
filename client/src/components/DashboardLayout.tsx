@@ -16,7 +16,7 @@ const navItems = [
   { label: "Generate", path: "/generate" },
   { label: "History", path: "/history" },
   { label: "Analytics", path: "/analytics" },
-  { label: "Pricing", path: "/billing" },
+  // { label: "Pricing", path: "/billing" }, // Archived for now
 ];
 
 export default function DashboardLayout({
@@ -31,6 +31,7 @@ export default function DashboardLayout({
     return <DashboardLayoutSkeleton />
   }
 
+  /* Archive Mode: Auth skipped
   if (!user) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -48,7 +49,7 @@ export default function DashboardLayout({
               const url = getLoginUrl();
               if (url === window.location.pathname) {
                 // Mock mode fallback - just force a reload which might trigger mock auth
-                window.location.reload();
+                window.location.reload(); 
               } else {
                 window.location.href = url;
               }
@@ -62,6 +63,7 @@ export default function DashboardLayout({
       </div>
     );
   }
+  */
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -99,6 +101,7 @@ export default function DashboardLayout({
           </nav>
 
           {/* User Profile */}
+          {/* Archive Mode: Profile hidden
           <div className="flex items-center gap-4">
             <span className="hidden md:block text-sm text-foreground/60 font-medium">Profile</span>
             <DropdownMenu>
@@ -126,6 +129,7 @@ export default function DashboardLayout({
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
+          */}
         </div>
       </header>
 
