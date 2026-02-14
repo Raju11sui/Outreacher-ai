@@ -45,7 +45,13 @@ export default function DashboardLayout({
           </div>
           <Button
             onClick={() => {
-              window.location.href = getLoginUrl();
+              const url = getLoginUrl();
+              if (url === window.location.pathname) {
+                // Mock mode fallback - just force a reload which might trigger mock auth
+                window.location.reload();
+              } else {
+                window.location.href = url;
+              }
             }}
             size="lg"
             className="w-full shadow-lg hover:shadow-xl transition-all"

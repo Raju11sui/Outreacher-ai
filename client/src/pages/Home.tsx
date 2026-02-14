@@ -38,7 +38,7 @@ export default function Home() {
                 Dashboard
               </Button>
             ) : (
-              <Button onClick={() => window.location.href = getLoginUrl()} className="bg-blue-600 hover:bg-blue-700">
+              <Button onClick={handleGetStarted} className="bg-blue-600 hover:bg-blue-700">
                 Sign in
               </Button>
             )}
