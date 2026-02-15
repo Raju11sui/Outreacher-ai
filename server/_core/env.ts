@@ -10,4 +10,7 @@ export const ENV = {
   get googleApiKey() {
     return process.env.GOOGLE_GENERATIVE_AI_API_KEY ?? "AIzaSyDDm6Xv3nrxQ1gGzssc74eMmU2GpTwr-is";
   },
+  get githubToken() {
+    return process.env.GITHUB_TOKEN ?? "";
+  },
 };

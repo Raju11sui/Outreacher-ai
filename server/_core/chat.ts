@@ -43,19 +43,32 @@ export function registerChatRoutes(app: Express) {
     try {
       const { messages } = req.body;
 
-      console.log("[/api/chat] API Key present:", !!ENV.googleApiKey);
-      if (!ENV.googleApiKey) {
-        console.warn("[/api/chat] Google API Key is missing. Switching to Fallback Mode directly.");
-        throw new Error("Missing API Key"); // Trigger catch block for fallback
-      }
-
       // Dynamic imports
       const { generateObject } = await import("ai");
-      const { createGoogleGenerativeAI } = await import("@ai-sdk/google");
 
-      const google = createGoogleGenerativeAI({
-        apiKey: ENV.googleApiKey,
-      });
+      let model;
+
+      console.log("[/api/chat] Checking for GitHub Token:", !!ENV.githubToken);
+
+      if (ENV.githubToken) {
+        console.log("[/api/chat] Using GitHub Models (GPT-4o)");
+        const { createOpenAI } = await import("@ai-sdk/openai");
+        const openai = createOpenAI({
+          baseURL: "https://models.inference.ai.azure.com",
+          apiKey: ENV.githubToken,
+        });
+        model = openai("gpt-4o");
+      } else if (ENV.googleApiKey) {
+        console.log("[/api/chat] Using Google Generative AI (Gemini)");
+        const { createGoogleGenerativeAI } = await import("@ai-sdk/google");
+        const google = createGoogleGenerativeAI({
+          apiKey: ENV.googleApiKey,
+        });
+        model = google("gemini-1.5-flash");
+      } else {
+        console.warn("[/api/chat] No API Keys found. Switching to Fallback Mode directly.");
+        throw new Error("Missing API Key"); // Trigger catch block for fallback
+      }
 
       console.log("[/api/chat] Generating object...");
 
@@ -74,7 +87,7 @@ export function registerChatRoutes(app: Express) {
       });
 
       const { object } = await generateObject({
-        model: google("gemini-1.5-flash"),
+        model,
         schema,
         messages,
         system: `You are OutreachIQ, a world-class cold outreach copywriter. Your goal is to write high-converting DMs.`,
